@@ -1,11 +1,14 @@
 import discord
 import asyncio
+import sqlite3
+# from flask import Flask, request,jsonify
 
 client = discord.Client()
 
-kadai_list = []
-
 TOKEN = ''
+
+connection = sqlite3.connect("kadai.db")
+cursor = connection.cursor()
 
 async def kadaihelp(message):
     str = "command list\n"
@@ -22,24 +25,43 @@ async def addkadai(message):
     try:
         title, deadline, memo = msg[1:]
         
-        kadai_list.append({
-            "title": title,
-            "deadline": deadline,
-            "memo": memo
-        })
+        cursor.execute('INSERT INTO kadai_list (title, deadline, memo) VALUES (?, ?, ?)', (title, deadline, memo))
+        connection.commit()
         
         await message.channel.send("課題を追加しました")
     except:
         await message.channel.send("形式が違います")
 
 async def deletekadai(message):
-    await print("delete")
+    try:
+        msg = message.content.split(" ")
+        title = msg[1]
+
+        cursor.execute('DELETE FROM kadai_list WHERE title = ?',(title,))
+        connection.commit()
+
+        if cursor.rowcount > 0:
+            await message.channel.send(f"課題 '{title}' を削除しました")
+        else:
+            await message.channel.send(f"課題 '{title}' が見つかりませんでした")
+    except Exception as e:
+        await message.channel.send(f"エラーが発生しました: {e}")
 
 async def listkadai(message):
-    await print("list")
+    cursor.execute('SELECT * FROM kadai_list')
+    rows = cursor.fetchall()
+    
+    if rows:
+        res = "現在の課題: \n"
+        for row in rows:
+            res += f"<{row[1]}>({row[2]}まで): {row[3]}\n"
+    else:
+        res = "課題はありません"
+ 
+    await message.channel.send(res)
 
 async def exit(message):
-    await print("exit")
+    await client.close()
 
 COMMANDS = {
     "help":{
