@@ -5,7 +5,7 @@ import os
 
 client = discord.Client(intents=discord.Intents.all())
 
-TOKEN = 'DISCORD_BOT_TOKEN'
+TOKEN = os.getenv('DISCORD_TOKEN')
 
 connection = sqlite3.connect("kadai.db")
 cursor = connection.cursor()
@@ -102,7 +102,7 @@ async def on_ready():
     
 @client.event
 async def on_message(message):
-    msg = message.contet.split(" ")
+    msg = message.content.split(" ")
     
     if message.author.bot:
         return
