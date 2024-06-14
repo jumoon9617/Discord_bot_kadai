@@ -1,14 +1,11 @@
 import discord
 import asyncio
 import sqlite3
+import os
 
 client = discord.Client(intents=discord.Intents.all())
 
 TOKEN = 'DISCORD_BOT_TOKEN'
-
-connection = sqlite3.connect("kadai.db")
-cursor = connection.cursor()
-
 
 connection = sqlite3.connect("kadai.db")
 cursor = connection.cursor()
@@ -27,6 +24,7 @@ async def addkadai(message):
     msg = message.content.split(" ")
     try:
         title, deadline, note = msg[1:]
+        
         cursor.execute('INSERT INTO kadai_list (title, deadline, note) VALUES (?, ?, ?)', (title, deadline, note))
         connection.commit()
         
@@ -59,6 +57,7 @@ async def listkadai(message):
             res += f"<{row[1]}>({row[2]}まで): {row[3]}\n"
     else:
         res = "課題はありません"
+
     await message.channel.send(res)
 
 async def exit(message):
