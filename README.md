@@ -1,10 +1,10 @@
 # discord bot dev
 
 ## use
-python 3.11.9, 
-docker, 
+python 3.11.9,
 sqlite, 
-flask, 
+docker, 
+VScode
 
 ## commands
 !kadaihelp, 
